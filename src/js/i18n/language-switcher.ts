@@ -5,26 +5,36 @@ import {
   changeLanguage,
 } from './i18n';
 
-export const createLanguageSwitcher = (): HTMLElement => {
+export const createLanguageSwitcher = (
+  id = 'language-switcher',
+  compact = false
+): HTMLElement => {
   const currentLang = getLanguageFromUrl();
 
   const container = document.createElement('div');
   container.className = 'relative';
-  container.id = 'language-switcher';
+  container.id = id;
 
   const button = document.createElement('button');
   button.className = `
     inline-flex items-center gap-1.5 text-sm font-medium
     bg-gray-800 text-gray-200 border border-gray-600
-    px-3 py-1.5 rounded-full transition-colors duration-200
+    ${compact ? 'px-2 py-1.5' : 'px-3 py-1.5'} rounded-full transition-colors duration-200
     shadow-sm hover:shadow-md hover:bg-gray-700
   `.trim();
   button.setAttribute('aria-haspopup', 'true');
   button.setAttribute('aria-expanded', 'false');
 
+  const globe = document.createElement('span');
+  globe.className = 'text-base leading-none';
+  globe.textContent = '🌐';
+  globe.setAttribute('aria-hidden', 'true');
+
   const textSpan = document.createElement('span');
-  textSpan.className = 'font-medium';
+  textSpan.className = compact ? 'sr-only' : 'font-medium';
   textSpan.textContent = languageNames[currentLang];
+
+  button.setAttribute('aria-label', `Language: ${languageNames[currentLang]}`);
 
   const chevron = document.createElement('svg');
   chevron.className = 'w-4 h-4';
@@ -34,8 +44,11 @@ export const createLanguageSwitcher = (): HTMLElement => {
   chevron.innerHTML =
     '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>';
 
+  button.appendChild(globe);
   button.appendChild(textSpan);
-  button.appendChild(chevron);
+  if (!compact) {
+    button.appendChild(chevron);
+  }
 
   const dropdown = document.createElement('div');
   dropdown.className = `
@@ -87,15 +100,34 @@ export const createLanguageSwitcher = (): HTMLElement => {
 };
 
 export const injectLanguageSwitcher = (): void => {
+  const desktopNavbarContainer = document.getElementById(
+    'navbar-language-switcher'
+  );
+  if (desktopNavbarContainer) {
+    desktopNavbarContainer.appendChild(
+      createLanguageSwitcher('language-switcher-desktop')
+    );
+  }
+
+  const mobileNavbarContainer = document.getElementById(
+    'mobile-navbar-language-switcher'
+  );
+  if (mobileNavbarContainer) {
+    mobileNavbarContainer.appendChild(
+      createLanguageSwitcher('language-switcher-mobile', true)
+    );
+  }
+
   const simpleModeContainer = document.getElementById(
     'simple-mode-language-switcher'
   );
   if (simpleModeContainer) {
-    const switcher = createLanguageSwitcher();
-    simpleModeContainer.appendChild(switcher);
-    return;
+    simpleModeContainer.appendChild(
+      createLanguageSwitcher('language-switcher-simple')
+    );
   }
 
+  // Keep the existing footer switcher as a secondary access point.
   const footer = document.querySelector('footer');
   if (!footer) return;
 
@@ -117,7 +149,7 @@ export const injectLanguageSwitcher = (): void => {
 
     if (socialIconsContainer) {
       const wrapper = document.createElement('div');
-      wrapper.className = 'inline-flex flex-col gap-4'; // gap-4 adds space between icons and switcher
+      wrapper.className = 'inline-flex flex-col gap-4';
 
       socialIconsContainer.parentNode?.insertBefore(
         wrapper,
@@ -125,18 +157,18 @@ export const injectLanguageSwitcher = (): void => {
       );
 
       wrapper.appendChild(socialIconsContainer);
-      const switcher = createLanguageSwitcher();
+      const switcher = createLanguageSwitcher('language-switcher-footer');
 
       switcher.className = 'relative w-full';
 
       const button = switcher.querySelector('button');
       if (button) {
         button.className = `
-                    flex items-center justify-between w-full text-sm font-medium
-                    bg-gray-800 text-gray-400 border border-gray-700
-                    px-3 py-2 rounded-lg transition-colors duration-200
-                    hover:text-white hover:border-gray-600
-                `.trim();
+          flex items-center justify-between w-full text-sm font-medium
+          bg-gray-800 text-gray-400 border border-gray-700
+          px-3 py-2 rounded-lg transition-colors duration-200
+          hover:text-white hover:border-gray-600
+        `.trim();
       }
 
       const dropdown = switcher.querySelector('div[role="menu"]');
@@ -146,12 +178,6 @@ export const injectLanguageSwitcher = (): void => {
       }
 
       wrapper.appendChild(switcher);
-    } else {
-      const switcherContainer = document.createElement('div');
-      switcherContainer.className = 'mt-4 w-full';
-      const switcher = createLanguageSwitcher();
-      switcherContainer.appendChild(switcher);
-      followUsColumn.appendChild(switcherContainer);
     }
   }
 };
