@@ -19,7 +19,8 @@
     "name": "合併 PDF",
     "subtitle": "將多個 PDF 合併為一個檔案。保留書籤。",
     "retainPageLabels": "保留每個檔案的原始頁面標籤",
-    "retainPageLabelsHint": "關閉（預設）：合併後的 PDF 使用自然頁碼 1–N。開啟：保留每個檔案的原始頁面標籤（可能產生重複的標籤）。"
+    "retainPageLabelsHint": "關閉（預設）：合併後的 PDF 使用自然頁碼 1–N。開啟：保留每個檔案的原始頁面標籤（可能產生重複的標籤）。",
+    "removeDuplicateFonts": "移除重複字型"
   },
   "splitPdf": {
     "name": "分割 PDF",
@@ -517,7 +518,8 @@
       "noFile": "沒有檔案",
       "noFileExplanation": "請先上傳 PDF 檔案。",
       "conversionSuccess": "PDF 已成功轉換為 TIFF！",
-      "conversionError": "無法將 PDF 轉換為 TIFF。檔案可能已損壞。"
+      "conversionError": "無法將 PDF 轉換為 TIFF。檔案可能已損壞。",
+      "conversionOutOfMemory": "瀏覽器在轉換時記憶體不足。請嘗試降低 DPI，或取消勾選多頁 TIFF 選項，改為逐頁轉換。"
     }
   },
   "pdfToCbz": {
