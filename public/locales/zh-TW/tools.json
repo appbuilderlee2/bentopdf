@@ -22,7 +22,29 @@
   },
   "compressPdf": {
     "name": "壓縮 PDF",
-    "subtitle": "降低你的 PDF 檔案大小。"
+    "subtitle": "降低你的 PDF 檔案大小。",
+    "algorithmLabel": "壓縮算法",
+    "condense": "Condense（推薦）",
+    "photon": "Photon（适用於圖片較多的 PDF）",
+    "condenseInfo": "Condense 使用進階壓縮：移除冗余資料、最佳化圖片、精簡字體。适用於大多數 PDF。",
+    "photonInfo": "Photon 將頁面轉換為圖片。适用於圖片較多/掃描的 PDF。",
+    "photonWarning": "警告：文字將無法選擇，連結將失效。",
+    "levelLabel": "壓縮級別",
+    "light": "輕度（保持品質）",
+    "balanced": "平衡（推薦）",
+    "aggressive": "积極（更小檔案）",
+    "extreme": "極限（最大壓縮）",
+    "grayscale": "轉換為灰度",
+    "grayscaleHint": "通過移除顏色資訊来减小檔案大小",
+    "customSettings": "自訂設定",
+    "customSettingsHint": "微調壓縮参數：",
+    "outputQuality": "輸出品質",
+    "resizeImagesTo": "調整圖片至",
+    "onlyProcessAbove": "僅處理高於",
+    "removeMetadata": "移除中繼資料",
+    "subsetFonts": "精簡字體（移除未使用的字元）",
+    "removeThumbnails": "移除嵌入的縮略圖",
+    "compressButton": "壓縮 PDF"
   },
   "pdfEditor": {
     "name": "PDF 編輯器",
@@ -325,219 +347,219 @@
     "subtitle": "使用 OpenCV 自動調正傾斜的掃描頁面。"
   },
   "rotateCustom": {
-    "name": "Rotate by Custom Degrees",
-    "subtitle": "Rotate pages by any custom angle."
+    "name": "按自訂角度旋轉",
+    "subtitle": "按任意自訂角度旋轉頁面。"
   },
   "odtToPdf": {
-    "name": "ODT to PDF",
-    "subtitle": "Convert OpenDocument Text files to PDF format. Supports multiple files.",
-    "acceptedFormats": "ODT files",
-    "convertButton": "Convert to PDF"
+    "name": "ODT 轉 PDF",
+    "subtitle": "將 OpenDocument 文字檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "ODT 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "csvToPdf": {
-    "name": "CSV to PDF",
-    "subtitle": "Convert CSV spreadsheet files to PDF format. Supports multiple files.",
-    "acceptedFormats": "CSV files",
-    "convertButton": "Convert to PDF"
+    "name": "CSV 轉 PDF",
+    "subtitle": "將 CSV 試算表檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "CSV 件",
+    "convertButton": "轉換為 PDF"
   },
   "rtfToPdf": {
-    "name": "RTF to PDF",
-    "subtitle": "Convert Rich Text Format documents to PDF. Supports multiple files.",
-    "acceptedFormats": "RTF files",
-    "convertButton": "Convert to PDF"
+    "name": "RTF 轉 PDF",
+    "subtitle": "將富文字格式文件轉換為 PDF。支持多個檔案。",
+    "acceptedFormats": "RTF 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "wordToPdf": {
-    "name": "Word to PDF",
-    "subtitle": "Convert Word documents (DOCX, DOC, ODT, RTF) to PDF format. Supports multiple files.",
-    "acceptedFormats": "DOCX, DOC, ODT, RTF files",
-    "convertButton": "Convert to PDF"
+    "name": "Word 轉 PDF",
+    "subtitle": "將 Word 文件 (DOCX, DOC, ODT, RTF) 轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "DOCX, DOC, ODT, RTF 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "excelToPdf": {
-    "name": "Excel to PDF",
-    "subtitle": "Convert Excel spreadsheets (XLSX, XLS, ODS, CSV) to PDF format. Supports multiple files.",
-    "acceptedFormats": "XLSX, XLS, ODS, CSV files",
-    "convertButton": "Convert to PDF"
+    "name": "Excel 轉 PDF",
+    "subtitle": "將 Excel 試算表 (XLSX, XLS, ODS, CSV) 轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "XLSX, XLS, ODS, CSV 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "powerpointToPdf": {
-    "name": "PowerPoint to PDF",
-    "subtitle": "Convert PowerPoint presentations (PPTX, PPT, ODP) to PDF format. Supports multiple files.",
-    "acceptedFormats": "PPTX, PPT, ODP files",
-    "convertButton": "Convert to PDF"
+    "name": "PowerPoint 轉 PDF",
+    "subtitle": "將 PowerPoint 簡報 (PPTX, PPT, ODP) 轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "PPTX, PPT, ODP 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "markdownToPdf": {
-    "name": "Markdown to PDF",
-    "subtitle": "Write or paste Markdown and export it as a beautifully formatted PDF.",
+    "name": "Markdown 轉 PDF",
+    "subtitle": "编寫或貼貼 Markdown 並將其導出為精美格式的 PDF。",
     "paneMarkdown": "Markdown",
-    "panePreview": "Preview",
-    "btnUpload": "Upload",
-    "btnSyncScroll": "Sync Scroll",
-    "btnSettings": "Settings",
-    "btnExportPdf": "Export PDF",
-    "settingsTitle": "Markdown Settings",
-    "settingsPreset": "Preset",
-    "presetDefault": "Default (GFM-like)",
-    "presetCommonmark": "CommonMark (strict)",
-    "presetZero": "Minimal (no features)",
-    "settingsOptions": "Markdown Options",
-    "optAllowHtml": "Allow HTML tags",
-    "optBreaks": "Convert newlines to <br>",
-    "optLinkify": "Auto-convert URLs to links",
-    "optTypographer": "Typographer (smart quotes, etc.)"
+    "panePreview": "預覽",
+    "btnUpload": "上傳",
+    "btnSyncScroll": "同步滚動",
+    "btnSettings": "設定",
+    "btnExportPdf": "導出 PDF",
+    "settingsTitle": "Markdown 設定",
+    "settingsPreset": "預設",
+    "presetDefault": "預設 (GFM 风格)",
+    "presetCommonmark": "CommonMark (严格)",
+    "presetZero": "最小 (無功能)",
+    "settingsOptions": "Markdown 選項",
+    "optAllowHtml": "允许 HTML 標簽",
+    "optBreaks": "將換行轉換為 <br>",
+    "optLinkify": "自動將 URL 轉換為連結",
+    "optTypographer": "排版器 (智能引号等)"
   },
   "pdfBooklet": {
-    "name": "PDF Booklet",
-    "subtitle": "Rearrange pages for double-sided booklet printing. Fold and staple to create a booklet.",
-    "howItWorks": "How it works:",
-    "step1": "Upload a PDF file.",
-    "step2": "Pages will be rearranged in booklet order.",
-    "step3": "Print double-sided, flip on short edge, fold and staple.",
-    "paperSize": "Paper Size",
-    "orientation": "Orientation",
-    "portrait": "Portrait",
-    "landscape": "Landscape",
-    "pagesPerSheet": "Pages per Sheet",
-    "createBooklet": "Create Booklet",
-    "processing": "Processing...",
-    "pageCount": "Page count will be padded to multiple of 4 if needed."
+    "name": "PDF 小冊子",
+    "subtitle": "重新排列頁面用於双面小冊子打印。折叠並装订以建立小冊子。",
+    "howItWorks": "工作原理：",
+    "step1": "上傳 PDF 檔案。",
+    "step2": "頁面將按小冊子顺序重新排列。",
+    "step3": "双面打印，短邊翻轉，折叠並装订。",
+    "paperSize": "紙張大小",
+    "orientation": "方向",
+    "portrait": "縱向",
+    "landscape": "橫向",
+    "pagesPerSheet": "每張頁數",
+    "createBooklet": "建立小冊子",
+    "processing": "處理中...",
+    "pageCount": "如需要，頁數將補齊為 4 的倍數。"
   },
   "xpsToPdf": {
-    "name": "XPS to PDF",
-    "subtitle": "Convert XPS/OXPS documents to PDF format. Supports multiple files.",
-    "acceptedFormats": "XPS, OXPS files",
-    "convertButton": "Convert to PDF"
+    "name": "XPS 轉 PDF",
+    "subtitle": "將 XPS/OXPS 文件轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "XPS, OXPS 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "mobiToPdf": {
-    "name": "MOBI to PDF",
-    "subtitle": "Convert MOBI e-books to PDF format. Supports multiple files.",
-    "acceptedFormats": "MOBI files",
-    "convertButton": "Convert to PDF"
+    "name": "MOBI 轉 PDF",
+    "subtitle": "將 MOBI 電子書轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "MOBI 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "epubToPdf": {
-    "name": "EPUB to PDF",
-    "subtitle": "Convert EPUB e-books to PDF format. Supports multiple files.",
-    "acceptedFormats": "EPUB files",
-    "convertButton": "Convert to PDF"
+    "name": "EPUB 轉 PDF",
+    "subtitle": "將 EPUB 電子書轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "EPUB 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "fb2ToPdf": {
-    "name": "FB2 to PDF",
-    "subtitle": "Convert FictionBook (FB2) e-books to PDF format. Supports multiple files.",
-    "acceptedFormats": "FB2 files",
-    "convertButton": "Convert to PDF"
+    "name": "FB2 轉 PDF",
+    "subtitle": "將 FictionBook (FB2) 電子書轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "FB2 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "cbzToPdf": {
-    "name": "CBZ to PDF",
-    "subtitle": "Convert comic book archives (CBZ/CBR) to PDF format. Supports multiple files.",
-    "acceptedFormats": "CBZ, CBR files",
-    "convertButton": "Convert to PDF"
+    "name": "CBZ 轉 PDF",
+    "subtitle": "將漫画檔案 (CBZ/CBR) 轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "CBZ, CBR 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "wpdToPdf": {
-    "name": "WPD to PDF",
-    "subtitle": "Convert WordPerfect documents (WPD) to PDF format. Supports multiple files.",
-    "acceptedFormats": "WPD files",
-    "convertButton": "Convert to PDF"
+    "name": "WPD 轉 PDF",
+    "subtitle": "將 WordPerfect 文件 (WPD) 轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "WPD 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "wpsToPdf": {
-    "name": "WPS to PDF",
-    "subtitle": "Convert WPS Office documents to PDF format. Supports multiple files.",
-    "acceptedFormats": "WPS files",
-    "convertButton": "Convert to PDF"
+    "name": "WPS 轉 PDF",
+    "subtitle": "將 WPS Office 文件轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "WPS 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "xmlToPdf": {
-    "name": "XML to PDF",
-    "subtitle": "Convert XML documents to PDF format. Supports multiple files.",
-    "acceptedFormats": "XML files",
-    "convertButton": "Convert to PDF"
+    "name": "XML 轉 PDF",
+    "subtitle": "將 XML 文件轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "XML 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "pagesToPdf": {
-    "name": "Pages to PDF",
-    "subtitle": "Convert Apple Pages documents to PDF format. Supports multiple files.",
-    "acceptedFormats": "Pages files",
-    "convertButton": "Convert to PDF"
+    "name": "Pages 轉 PDF",
+    "subtitle": "將 Apple Pages 文件轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "Pages 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "odgToPdf": {
-    "name": "ODG to PDF",
-    "subtitle": "Convert OpenDocument Graphics (ODG) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "ODG files",
-    "convertButton": "Convert to PDF"
+    "name": "ODG 轉 PDF",
+    "subtitle": "將 OpenDocument Graphics (ODG) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "ODG 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "odsToPdf": {
-    "name": "ODS to PDF",
-    "subtitle": "Convert OpenDocument Spreadsheet (ODS) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "ODS files",
-    "convertButton": "Convert to PDF"
+    "name": "ODS 轉 PDF",
+    "subtitle": "將 OpenDocument Spreadsheet (ODS) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "ODS 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "odpToPdf": {
-    "name": "ODP to PDF",
-    "subtitle": "Convert OpenDocument Presentation (ODP) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "ODP files",
-    "convertButton": "Convert to PDF"
+    "name": "ODP 轉 PDF",
+    "subtitle": "將 OpenDocument Presentation (ODP) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "ODP 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "pubToPdf": {
-    "name": "PUB to PDF",
-    "subtitle": "Convert Microsoft Publisher (PUB) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "PUB files",
-    "convertButton": "Convert to PDF"
+    "name": "PUB 轉 PDF",
+    "subtitle": "將 Microsoft Publisher (PUB) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "PUB 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "vsdToPdf": {
-    "name": "VSD to PDF",
-    "subtitle": "Convert Microsoft Visio (VSD, VSDX) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "VSD, VSDX files",
-    "convertButton": "Convert to PDF"
+    "name": "VSD 轉 PDF",
+    "subtitle": "將 Microsoft Visio (VSD, VSDX) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "VSD, VSDX 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "psdToPdf": {
-    "name": "PSD to PDF",
-    "subtitle": "Convert Adobe Photoshop (PSD) files to PDF format. Supports multiple files.",
-    "acceptedFormats": "PSD files",
-    "convertButton": "Convert to PDF"
+    "name": "PSD 轉 PDF",
+    "subtitle": "將 Adobe Photoshop (PSD) 檔案轉換為 PDF 格式。支持多個檔案。",
+    "acceptedFormats": "PSD 檔案",
+    "convertButton": "轉換為 PDF"
   },
   "pdfToSvg": {
-    "name": "PDF to SVG",
-    "subtitle": "Convert each page of a PDF file into a scalable vector graphic (SVG) for perfect quality at any size."
+    "name": "PDF 轉 SVG",
+    "subtitle": "將 PDF 檔案的每一頁轉換為可縮放矢量圖形 (SVG)，在任何尺寸下都能保持完美品質。"
   },
   "extractTables": {
-    "name": "Extract PDF Tables",
-    "subtitle": "Extract tables from PDF files and export as CSV, JSON, or Markdown."
+    "name": "提取 PDF 表格",
+    "subtitle": "從 PDF 檔案中提取表格，並導出為 CSV、JSON 或 Markdown 格式。"
   },
   "pdfToCsv": {
-    "name": "PDF to CSV",
-    "subtitle": "Extract tables from PDF and convert to CSV format."
+    "name": "PDF 轉 CSV",
+    "subtitle": "從 PDF 中提取表格並轉換為 CSV 格式。"
   },
   "pdfToExcel": {
-    "name": "PDF to Excel",
-    "subtitle": "Extract tables from PDF and convert to Excel (XLSX) format."
+    "name": "PDF 轉 Excel",
+    "subtitle": "從 PDF 中提取表格並轉換為 Excel (XLSX) 格式。"
   },
   "pdfToText": {
-    "name": "PDF to Text",
-    "subtitle": "Extract text from PDF files and save as plain text (.txt). Supports multiple files.",
-    "note": "This tool works ONLY with digitally created PDFs. For scanned documents or image-based PDFs, use our OCR PDF tool instead.",
-    "convertButton": "Extract Text"
+    "name": "PDF 轉 文字",
+    "subtitle": "從 PDF 檔案中提取文字並保存為純文字檔案 (.txt)。支持多個檔案。",
+    "note": "此工具僅适用於數字建立的 PDF。对於掃描文件或基於影像的 PDF，請使用我们的 OCR PDF 工具。",
+    "convertButton": "提取文字"
   },
   "digitalSignPdf": {
-    "name": "Digital Signature PDF",
-    "pageTitle": "Digital Signature PDF - Add Cryptographic Signature | BentoPDF",
-    "subtitle": "Add a cryptographic digital signature to your PDF using X.509 certificates. Supports PKCS#12 (.pfx, .p12) and PEM formats. Your private key never leaves your browser.",
-    "certificateSection": "Certificate",
-    "uploadCert": "Upload certificate (.pfx, .p12)",
-    "certPassword": "Certificate Password",
-    "certPasswordPlaceholder": "Enter certificate password",
-    "certInfo": "Certificate Information",
-    "certSubject": "Subject",
-    "certIssuer": "Issuer",
-    "certValidity": "Valid",
-    "signatureDetails": "Signature Details (Optional)",
-    "reason": "Reason",
-    "reasonPlaceholder": "e.g., I approve this document",
-    "location": "Location",
-    "locationPlaceholder": "e.g., New York, USA",
-    "contactInfo": "Contact Info",
-    "contactPlaceholder": "e.g., email@example.com",
-    "applySignature": "Apply Digital Signature",
-    "successMessage": "PDF signed successfully! The signature can be verified in any PDF reader."
+    "name": "PDF 數位簽章",
+    "pageTitle": "PDF 數位簽章 - 添加加密簽名 | BentoPDF",
+    "subtitle": "使用 X.509 憑證為您的 PDF 添加加密數位簽章。支持 PKCS#12 (.pfx, .p12) 和 PEM 格式。您的私钥永远不會离開您的浏覽器。",
+    "certificateSection": "憑證",
+    "uploadCert": "上傳憑證 (.pfx, .p12)",
+    "certPassword": "憑證密碼",
+    "certPasswordPlaceholder": "輸入憑證密碼",
+    "certInfo": "憑證資訊",
+    "certSubject": "主體",
+    "certIssuer": "頒發者",
+    "certValidity": "有效期",
+    "signatureDetails": "簽名详情（可選）",
+    "reason": "原因",
+    "reasonPlaceholder": "例如：我批准此文件",
+    "location": "位置",
+    "locationPlaceholder": "例如：北京，中国",
+    "contactInfo": "聯系資訊",
+    "contactPlaceholder": "例如：email@example.com",
+    "applySignature": "應用數位簽章",
+    "successMessage": "PDF 簽名成功！簽名可在任何 PDF 閱讀器中驗證。"
   },
   "validateSignaturePdf": {
-    "name": "Validate PDF Signature",
-    "pageTitle": "Validate PDF Signature - Verify Digital Signatures | BentoPDF",
-    "subtitle": "Verify digital signatures in your PDF files. Check certificate validity, view signer details, and confirm document integrity. All processing happens in your browser."
+    "name": "驗證 PDF 簽名",
+    "pageTitle": "驗證 PDF 簽名 - 驗證數位簽章 | BentoPDF",
+    "subtitle": "驗證您的 PDF 檔案中的數位簽章。檢查憑證有效性、查看簽名者详情並確認文件完整性。所有處理都在您的浏覽器中進行。"
   },
   "pdfToWord": {
     "name": "PDF 轉 Word",
