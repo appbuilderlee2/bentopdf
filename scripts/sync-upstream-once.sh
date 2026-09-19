@@ -5,7 +5,9 @@ ORIGINAL_SHA="$(git rev-parse HEAD)"
 RUN_ID="${GITHUB_RUN_ID:-manual}"
 BACKUP_BRANCH="backup/pre-upstream-sync-${RUN_ID}"
 
-cp .github/workflows/sync-upstream-once.yml /tmp/sync-upstream-once.yml
+rm -rf /tmp/current-workflows
+mkdir -p /tmp/current-workflows
+cp -R .github/workflows/. /tmp/current-workflows/
 cp scripts/sync-upstream-once.sh /tmp/sync-upstream-once.sh
 
 git config user.name "github-actions[bot]"
@@ -17,10 +19,18 @@ git push origin "$BACKUP_BRANCH"
 git remote remove upstream 2>/dev/null || true
 git remote add upstream https://github.com/alam00000/bentopdf.git
 git fetch upstream main
-git reset --hard upstream/main
 
-mkdir -p .github/workflows scripts
-cp /tmp/sync-upstream-once.yml .github/workflows/sync-upstream-once.yml
+# Apply the latest upstream tree as one squashed update on top of this fork.
+# This preserves our branch history and avoids importing upstream workflow
+# commits that GitHub Actions is not permitted to push.
+git read-tree --reset -u upstream/main
+
+# Keep this fork's existing GitHub Actions definitions unchanged.
+rm -rf .github/workflows
+mkdir -p .github/workflows
+cp -R /tmp/current-workflows/. .github/workflows/
+
+mkdir -p scripts
 cp /tmp/sync-upstream-once.sh scripts/sync-upstream-once.sh
 chmod +x scripts/sync-upstream-once.sh
 
@@ -184,4 +194,4 @@ npm run test:run
 
 git add -A
 git commit -m "Sync upstream BentoPDF v2.8.8 and preserve local i18n UI"
-git push --force-with-lease origin HEAD:main
+git push origin HEAD:main
