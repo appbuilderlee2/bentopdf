@@ -1,0 +1,16 @@
+name: Sync runner check
+
+on:
+  push:
+    paths:
+      - ".github/workflows/sync-runner-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check runner
+        run: echo "runner-ok"
