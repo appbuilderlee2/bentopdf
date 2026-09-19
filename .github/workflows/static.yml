@@ -32,7 +32,7 @@ env:
 jobs:
   # Single deploy job since we're just deploying
   deploy:
-    if: github.repository == 'alam00000/bentopdf'
+    if: github.repository == 'appbuilderlee2/bentopdf'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -43,7 +43,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
       - name: Install dependencies
         run: npm ci
       - name: Build distribution
