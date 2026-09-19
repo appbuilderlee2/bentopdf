@@ -29,7 +29,7 @@ export const languageNames: Record<SupportedLanguage, string> = {
   de: 'Deutsch',
   es: 'Español',
   zh: '中文',
-  'zh-TW': '繁體中文（台灣）',
+  'zh-TW': '繁體中文',
   vi: 'Tiếng Việt',
   tr: 'Türkçe',
   id: 'Bahasa Indonesia',
