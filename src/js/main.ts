@@ -1,3 +1,5 @@
+import './utils/map-upsert-polyfill.js';
+import './utils/setup-pdf-worker.js';
 import { categories } from './config/tools.js';
 import { dom, switchView, hideAlert } from './ui.js';
 import { ShortcutsManager } from './logic/shortcuts.js';
@@ -5,26 +7,55 @@ import { createIcons, icons } from 'lucide';
 import '@phosphor-icons/web/regular';
 import * as pdfjsLib from 'pdfjs-dist';
 import '../css/styles.css';
-import { formatShortcutDisplay, formatStars } from './utils/helpers.js';
-import { APP_VERSION } from '../version.js';
+import {
+  escapeHtml,
+  formatShortcutDisplay,
+  formatStars,
+} from './utils/helpers.js';
 import {
   initI18n,
   applyTranslations,
   rewriteLinks,
   injectLanguageSwitcher,
-  createLanguageSwitcher,
   t,
 } from './i18n/index.js';
+import {
+  loadRuntimeConfig,
+  isToolDisabled,
+  isCurrentPageDisabled,
+} from './utils/disabled-tools.js';
+import {
+  getStoredItem,
+  setStoredItem,
+  removeStoredItem,
+} from './utils/safe-storage.js';
+declare const __BRAND_NAME__: string;
 
 const init = async () => {
   await initI18n();
+  await loadRuntimeConfig();
   injectLanguageSwitcher();
   applyTranslations();
 
-  pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-    'pdfjs-dist/build/pdf.worker.min.mjs',
-    import.meta.url
-  ).toString();
+  if (isCurrentPageDisabled()) {
+    document.title = t('disabledTool.title') || 'Tool Unavailable';
+    const main = document.querySelector('main') || document.body;
+    const heading = t('disabledTool.heading') || 'This tool has been disabled';
+    const message =
+      t('disabledTool.message') ||
+      'This tool is not available in your deployment. Contact your administrator for more information.';
+    const backHome = t('disabledTool.backHome') || 'Back to Home';
+    main.innerHTML = `
+      <div class="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <i class="ph ph-prohibit text-6xl text-gray-500 mb-4"></i>
+        <h1 class="text-2xl font-bold text-white mb-2">${heading}</h1>
+        <p class="text-gray-400 mb-6">${message}</p>
+        <a href="${import.meta.env.BASE_URL}" class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition">${backHome}</a>
+      </div>
+    `;
+    return;
+  }
+
   if (__SIMPLE_MODE__) {
     const hideBrandingSections = () => {
       const heroSection = document.getElementById('hero-section');
@@ -81,18 +112,19 @@ const init = async () => {
         (divider as HTMLElement).style.display = 'none';
       });
 
-      document.title = 'BentoPDF - PDF Tools';
+      const brandName = __BRAND_NAME__ || 'BentoPDF';
+      document.title = `${brandName} - ${t('simpleMode.title')}`;
 
       const toolsHeader = document.getElementById('tools-header');
       if (toolsHeader) {
         const title = toolsHeader.querySelector('h2');
         const subtitle = toolsHeader.querySelector('p');
         if (title) {
-          title.textContent = 'PDF Tools';
+          title.textContent = t('simpleMode.title');
           title.className = 'text-4xl md:text-5xl font-bold text-white mb-3';
         }
         if (subtitle) {
-          subtitle.textContent = 'Select a tool to get started';
+          subtitle.textContent = t('simpleMode.subtitle');
           subtitle.className = 'text-lg text-gray-400';
         }
       }
@@ -136,11 +168,13 @@ const init = async () => {
   };
 
   const toolTranslationKeys: Record<string, string> = {
+    'PDF Workflow Builder': 'tools:pdfWorkflow',
     'PDF Multi Tool': 'tools:pdfMultiTool',
     'Merge PDF': 'tools:mergePdf',
     'Split PDF': 'tools:splitPdf',
     'Compress PDF': 'tools:compressPdf',
     'PDF Editor': 'tools:pdfEditor',
+    'Edit PDF Text': 'tools:editPdfText',
     'JPG to PDF': 'tools:jpgToPdf',
     'Sign PDF': 'tools:signPdf',
     'Crop PDF': 'tools:cropPdf',
@@ -150,12 +184,14 @@ const init = async () => {
     'Edit Bookmarks': 'tools:editBookmarks',
     'Table of Contents': 'tools:tableOfContents',
     'Page Numbers': 'tools:pageNumbers',
+    'Add Page Labels': 'tools:addPageLabels',
     'Add Watermark': 'tools:addWatermark',
     'Header & Footer': 'tools:headerFooter',
     'Invert Colors': 'tools:invertColors',
     'Background Color': 'tools:backgroundColor',
     'Change Text Color': 'tools:changeTextColor',
     'Add Stamps': 'tools:addStamps',
+    'Bates Numbering': 'tools:batesNumbering',
     'Remove Annotations': 'tools:removeAnnotations',
     'PDF Form Filler': 'tools:pdfFormFiller',
     'Create PDF Form': 'tools:createPdfForm',
@@ -174,10 +210,13 @@ const init = async () => {
     'PDF to WebP': 'tools:pdfToWebp',
     'PDF to BMP': 'tools:pdfToBmp',
     'PDF to TIFF': 'tools:pdfToTiff',
+    'PDF to CBZ': 'tools:pdfToCbz',
     'PDF to Greyscale': 'tools:pdfToGreyscale',
     'PDF to JSON': 'tools:pdfToJson',
     'OCR PDF': 'tools:ocrPdf',
-    'Alternate & Mix Pages': 'tools:alternateMix',
+    'Alternate & Mix Pages': 'tools:alternateMerge',
+    'Duplex Collate': 'tools:duplexCollate',
+    'PDF Overlay': 'tools:pdfOverlay',
     'Organize & Duplicate': 'tools:duplicateOrganize',
     'Add Attachments': 'tools:addAttachments',
     'Extract Attachments': 'tools:extractAttachments',
@@ -210,6 +249,7 @@ const init = async () => {
     'Deskew PDF': 'tools:deskewPdf',
     'Digital Signature': 'tools:digitalSignPdf',
     'Validate Signature': 'tools:validateSignaturePdf',
+    'Timestamp PDF': 'tools:timestampPdf',
     'Scanner Effect': 'tools:scannerEffect',
     'Adjust Colors': 'tools:adjustColors',
     'Markdown to PDF': 'tools:markdownToPdf',
@@ -253,19 +293,86 @@ const init = async () => {
   if (dom.toolGrid) {
     dom.toolGrid.textContent = '';
 
-    categories.forEach((category) => {
-      const categoryGroup = document.createElement('div');
-      categoryGroup.className = 'category-group col-span-full';
+    let collapsedCategories: string[] = [];
+    try {
+      const stored = getStoredItem('collapsedCategories');
+      if (stored) collapsedCategories = JSON.parse(stored);
+    } catch {
+      removeStoredItem('collapsedCategories');
+    }
 
-      const title = document.createElement('h2');
-      title.className =
-        'text-xl font-bold text-indigo-400 mb-4 mt-8 first:mt-0 text-white';
+    function saveCollapsedCategories() {
+      setStoredItem('collapsedCategories', JSON.stringify(collapsedCategories));
+    }
+
+    const filteredCategories = categories
+      .map((category) => ({
+        ...category,
+        tools: category.tools.filter((tool) => !isToolDisabled(tool.id)),
+      }))
+      .filter((category) => category.tools.length > 0);
+
+    filteredCategories.forEach((category) => {
+      const categoryGroup = document.createElement('div');
+      const categorySlug = category.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '');
+      categoryGroup.className = `category-group col-span-full is-cat-${categorySlug}`;
+
+      const header = document.createElement('button');
+      header.className = 'category-header';
+      header.type = 'button';
+
+      const title = document.createElement('span');
       const categoryKey = categoryTranslationKeys[category.name];
       title.textContent = categoryKey ? t(categoryKey) : category.name;
 
+      const chevron = document.createElement('i');
+      chevron.setAttribute('data-lucide', 'chevron-down');
+      chevron.className =
+        'category-chevron w-5 h-5 text-gray-400 transition-transform duration-300';
+
+      header.append(title, chevron);
+
       const toolsContainer = document.createElement('div');
       toolsContainer.className =
-        'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6';
+        'category-tools grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6';
+
+      const isCollapsed = collapsedCategories.includes(category.name);
+      if (isCollapsed) {
+        categoryGroup.classList.add('collapsed');
+        toolsContainer.style.maxHeight = '0px';
+      }
+
+      toolsContainer.addEventListener('transitionend', (e) => {
+        if ((e as TransitionEvent).propertyName !== 'max-height') return;
+        if (!categoryGroup.classList.contains('collapsed')) {
+          toolsContainer.style.maxHeight = 'none';
+          toolsContainer.style.overflow = 'visible';
+        }
+      });
+
+      header.addEventListener('click', () => {
+        const collapsed = categoryGroup.classList.toggle('collapsed');
+        if (collapsed) {
+          toolsContainer.style.maxHeight = toolsContainer.scrollHeight + 'px';
+          toolsContainer.style.overflow = 'hidden';
+          requestAnimationFrame(() => {
+            toolsContainer.style.maxHeight = '0px';
+          });
+          if (!collapsedCategories.includes(category.name)) {
+            collapsedCategories.push(category.name);
+          }
+        } else {
+          toolsContainer.style.overflow = 'hidden';
+          toolsContainer.style.maxHeight = toolsContainer.scrollHeight + 'px';
+          collapsedCategories = collapsedCategories.filter(
+            (n) => n !== category.name
+          );
+        }
+        saveCollapsedCategories();
+      });
 
       category.tools.forEach((tool) => {
         let toolCard: HTMLDivElement | HTMLAnchorElement;
@@ -310,8 +417,13 @@ const init = async () => {
         toolsContainer.appendChild(toolCard);
       });
 
-      categoryGroup.append(title, toolsContainer);
+      categoryGroup.append(header, toolsContainer);
       dom.toolGrid.appendChild(categoryGroup);
+
+      if (!isCollapsed) {
+        toolsContainer.style.maxHeight = 'none';
+        toolsContainer.style.overflow = 'visible';
+      }
     });
 
     const searchBar = document.getElementById('search-bar');
@@ -398,7 +510,7 @@ const init = async () => {
       }
     });
 
-    dom.toolGrid.addEventListener('click', (e) => {
+    dom.toolGrid.addEventListener('click', () => {
       // All tools now use href and navigate directly - no modal handling needed
     });
   }
@@ -431,6 +543,49 @@ const init = async () => {
     });
   }
 
+  const faqDetails =
+    document.querySelectorAll<HTMLDetailsElement>('details.faq-d');
+  if (
+    faqDetails.length > 0 &&
+    !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  ) {
+    faqDetails.forEach((detail) => {
+      const summary = detail.querySelector('summary');
+      const body = detail.querySelector<HTMLElement>('.faq-d-a');
+      if (!summary || !body) return;
+
+      let animation: Animation | null = null;
+
+      summary.addEventListener('click', (event) => {
+        event.preventDefault();
+        animation?.cancel();
+
+        const wasOpen = detail.open;
+        if (!wasOpen) detail.open = true;
+
+        const fullHeight = `${body.scrollHeight}px`;
+        const fullPadding = window.getComputedStyle(body).paddingBottom;
+        const collapsed = { height: '0px', paddingBottom: '0px', opacity: 0 };
+        const expanded = {
+          height: fullHeight,
+          paddingBottom: fullPadding,
+          opacity: 1,
+        };
+
+        body.style.overflow = 'hidden';
+        animation = body.animate(
+          wasOpen ? [expanded, collapsed] : [collapsed, expanded],
+          { duration: 280, easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)' }
+        );
+        animation.onfinish = () => {
+          if (wasOpen) detail.open = false;
+          body.style.overflow = '';
+          animation = null;
+        };
+      });
+    });
+  }
+
   createIcons({ icons });
   console.log('Please share our tool and share the love!');
 
@@ -439,7 +594,11 @@ const init = async () => {
     document.getElementById('github-stars-mobile'),
   ];
 
-  if (githubStarsElements.some((el) => el) && !__SIMPLE_MODE__) {
+  if (
+    githubStarsElements.some((el) => el) &&
+    !__SIMPLE_MODE__ &&
+    !__DISABLE_GITHUB_STARS__
+  ) {
     fetch('https://api.github.com/repos/alam00000/bentopdf')
       .then((response) => response.json())
       .then((data) => {
@@ -505,7 +664,7 @@ const init = async () => {
   ) as HTMLInputElement;
   const toolInterface = document.getElementById('tool-interface');
 
-  const savedFullWidth = localStorage.getItem('fullWidthMode') !== 'false';
+  const savedFullWidth = getStoredItem('fullWidthMode') !== 'false';
   if (fullWidthToggle) {
     fullWidthToggle.checked = savedFullWidth;
     applyFullWidthMode(savedFullWidth);
@@ -521,7 +680,9 @@ const init = async () => {
     }
 
     // Apply to all page uploaders
-    const pageUploaders = document.querySelectorAll('#tool-uploader');
+    const pageUploaders = document.querySelectorAll(
+      '#tool-uploader, #signature-editor'
+    );
     pageUploaders.forEach((uploader) => {
       if (enabled) {
         uploader.classList.remove('max-w-2xl', 'max-w-5xl');
@@ -540,8 +701,37 @@ const init = async () => {
   if (fullWidthToggle) {
     fullWidthToggle.addEventListener('change', (e) => {
       const enabled = (e.target as HTMLInputElement).checked;
-      localStorage.setItem('fullWidthMode', enabled.toString());
+      setStoredItem('fullWidthMode', enabled.toString());
       applyFullWidthMode(enabled);
+    });
+  }
+
+  const compactModeToggle = document.getElementById(
+    'compact-mode-toggle'
+  ) as HTMLInputElement;
+
+  const savedCompactMode = getStoredItem('compactMode') === 'true';
+  if (compactModeToggle) {
+    compactModeToggle.checked = savedCompactMode;
+  }
+  applyCompactMode(savedCompactMode);
+
+  function applyCompactMode(enabled: boolean) {
+    if (dom.toolGrid) {
+      dom.toolGrid.classList.toggle('compact-mode', enabled);
+      dom.toolGrid
+        .querySelectorAll('.category-group:not(.collapsed) .category-tools')
+        .forEach((container) => {
+          (container as HTMLElement).style.maxHeight = 'none';
+        });
+    }
+  }
+
+  if (compactModeToggle) {
+    compactModeToggle.addEventListener('change', (e) => {
+      const enabled = (e.target as HTMLInputElement).checked;
+      setStoredItem('compactMode', enabled.toString());
+      applyCompactMode(enabled);
     });
   }
 
@@ -714,10 +904,10 @@ const init = async () => {
 
       if (confirmMode) {
         dom.warningCancelBtn.style.display = '';
-        dom.warningConfirmBtn.textContent = 'Proceed';
+        dom.warningConfirmBtn.textContent = t('warning.proceed');
       } else {
         dom.warningCancelBtn.style.display = 'none';
-        dom.warningConfirmBtn.textContent = 'OK';
+        dom.warningConfirmBtn.textContent = t('alert.ok');
       }
 
       const handleConfirm = () => {
@@ -757,7 +947,7 @@ const init = async () => {
     });
   }
 
-  function getToolId(tool: any): string {
+  function getToolId(tool: { id?: string; href?: string }): string {
     if (tool.id) return tool.id;
     if (tool.href) {
       const match = tool.href.match(/\/([^/]+)\.html$/);
@@ -772,16 +962,21 @@ const init = async () => {
 
     const allShortcuts = ShortcutsManager.getAllShortcuts();
     const isMac = navigator.userAgent.toUpperCase().includes('MAC');
-    const allTools = categories.flatMap((c) => c.tools);
+    const shortcutCategories = categories
+      .map((category) => ({
+        ...category,
+        tools: category.tools.filter((tool) => !isToolDisabled(tool.id)),
+      }))
+      .filter((category) => category.tools.length > 0);
+    const allTools = shortcutCategories.flatMap((c) => c.tools);
 
-    categories.forEach((category) => {
+    shortcutCategories.forEach((category) => {
       const section = document.createElement('div');
       section.className = 'category-section mb-6 last:mb-0';
 
       const header = document.createElement('h3');
       header.className =
         'text-gray-400 text-xs font-bold uppercase tracking-wider mb-3 pl-1';
-      // Translate category name
       const categoryKey = categoryTranslationKeys[category.name];
       header.textContent = categoryKey ? t(categoryKey) : category.name;
       section.appendChild(header);
@@ -805,8 +1000,12 @@ const init = async () => {
         left.className = 'flex items-center gap-3';
 
         const icon = document.createElement('i');
-        icon.className = 'w-5 h-5 text-indigo-400';
-        icon.setAttribute('data-lucide', tool.icon);
+        if (tool.icon.startsWith('ph-')) {
+          icon.className = `ph ${tool.icon} w-5 h-5 text-indigo-400`;
+        } else {
+          icon.className = 'w-5 h-5 text-indigo-400';
+          icon.setAttribute('data-lucide', tool.icon);
+        }
 
         const name = document.createElement('span');
         name.className = 'text-gray-200 font-medium';
@@ -911,8 +1110,8 @@ const init = async () => {
 
               await showWarningModal(
                 t('settings.warnings.alreadyInUse'),
-                `<strong>${displayCombo}</strong> ${t('settings.warnings.assignedTo')}<br><br>` +
-                  `<em>"${translatedToolName}"</em><br><br>` +
+                `<strong>${escapeHtml(displayCombo)}</strong> ${t('settings.warnings.assignedTo')}<br><br>` +
+                  `<em>"${escapeHtml(translatedToolName)}"</em><br><br>` +
                   t('settings.warnings.chooseDifferent'),
                 false
               );
@@ -931,8 +1130,8 @@ const init = async () => {
               const displayCombo = formatShortcutDisplay(combo, isMac);
               const shouldProceed = await showWarningModal(
                 t('settings.warnings.reserved'),
-                `<strong>${displayCombo}</strong> ${t('settings.warnings.commonlyUsed')}<br><br>` +
-                  `"<em>${reservedWarning}</em>"<br><br>` +
+                `<strong>${escapeHtml(displayCombo)}</strong> ${t('settings.warnings.commonlyUsed')}<br><br>` +
+                  `"<em>${escapeHtml(reservedWarning)}</em>"<br><br>` +
                   `${t('settings.warnings.unreliable')}<br><br>` +
                   t('settings.warnings.useAnyway')
               );

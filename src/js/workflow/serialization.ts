@@ -4,29 +4,18 @@ import type { ClassicScheme, LitArea2D } from '@retejs/lit-plugin';
 import type { BaseWorkflowNode } from './nodes/base-node';
 import { createNodeByType } from './nodes/registry';
 import { ClassicPreset } from 'rete';
-import type { SerializedWorkflow } from './types';
+import type {
+  SerializedWorkflow,
+  SerializedNode,
+  SerializedConnection,
+} from './types';
 import { WORKFLOW_VERSION } from './types';
+import { wfError } from './errors';
 
 type AreaExtra = LitArea2D<ClassicScheme>;
 
-interface SerializedNode {
-  id: string;
-  type: string;
-  position: { x: number; y: number };
-  controls: Record<string, unknown>;
-}
-
-interface SerializedConnection {
-  id: string;
-  source: string;
-  sourceOutput: string;
-  target: string;
-  targetInput: string;
-}
-
 function getNodeType(node: BaseWorkflowNode): string | null {
-  const constructorName = node.constructor.name;
-  return constructorName || null;
+  return node.nodeType || null;
 }
 
 function serializeWorkflow(
@@ -79,6 +68,16 @@ async function deserializeWorkflow(
   editor: NodeEditor<ClassicScheme>,
   area: AreaPlugin<ClassicScheme, AreaExtra>
 ): Promise<void> {
+  if (!data || !Array.isArray(data.nodes) || !Array.isArray(data.connections)) {
+    throw new Error(wfError('invalidWorkflowFile'));
+  }
+
+  if (data.version !== WORKFLOW_VERSION) {
+    console.warn(
+      `Workflow version mismatch: expected ${WORKFLOW_VERSION}, got ${data.version}. Attempting load anyway.`
+    );
+  }
+
   for (const conn of editor.getConnections()) {
     await editor.removeConnection(conn.id);
   }
@@ -89,7 +88,7 @@ async function deserializeWorkflow(
   const idMap = new Map<string, string>();
   const skippedTypes: string[] = [];
 
-  for (const serializedNode of (data as any).nodes) {
+  for (const serializedNode of data.nodes) {
     const node = createNodeByType(serializedNode.type);
     if (!node) {
       skippedTypes.push(serializedNode.type);
@@ -99,17 +98,20 @@ async function deserializeWorkflow(
     for (const [key, value] of Object.entries(serializedNode.controls || {})) {
       const control = node.controls[key];
       if (control && 'value' in control) {
-        (control as any).value = value;
+        (control as { value: unknown }).value = node.sanitizeControlValue(
+          key,
+          value
+        );
       }
     }
 
-    await editor.addNode(node as any);
+    await editor.addNode(node as ClassicScheme['Node']);
     idMap.set(serializedNode.id, node.id);
 
     await area.translate(node.id, serializedNode.position);
   }
 
-  for (const serializedConn of (data as any).connections) {
+  for (const serializedConn of data.connections) {
     const sourceId = idMap.get(serializedConn.source);
     const targetId = idMap.get(serializedConn.target);
     if (!sourceId || !targetId) continue;
@@ -124,14 +126,11 @@ async function deserializeWorkflow(
       targetNode,
       serializedConn.targetInput
     );
-    await editor.addConnection(conn as any);
+    await editor.addConnection(conn as ClassicScheme['Connection']);
   }
 
   if (skippedTypes.length > 0) {
     console.warn('Skipped unknown node types during load:', skippedTypes);
-    throw new Error(
-      `Some nodes could not be loaded: ${skippedTypes.join(', ')}. They may have been removed or renamed.`
-    );
   }
 }
 
@@ -172,9 +171,7 @@ export function saveWorkflow(
     } else {
       delete templates[name];
     }
-    throw new Error(
-      'Failed to save workflow: storage quota exceeded. Try deleting old templates.'
-    );
+    throw new Error(wfError('storageQuotaExceeded'), { cause: e });
   }
 }
 
@@ -215,14 +212,11 @@ export function exportWorkflow(
   const json = JSON.stringify(data, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
-  try {
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'workflow.json';
-    a.click();
-  } finally {
-    URL.revokeObjectURL(url);
-  }
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'workflow.json';
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 export async function importWorkflow(
@@ -233,13 +227,16 @@ export async function importWorkflow(
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = '.json';
+
+    let settled = false;
+
     input.onchange = async () => {
+      settled = true;
       const file = input.files?.[0];
       if (!file) {
         resolve();
         return;
       }
-
       try {
         const text = await file.text();
         const data = JSON.parse(text) as SerializedWorkflow;
@@ -247,9 +244,18 @@ export async function importWorkflow(
         resolve();
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';
-        reject(new Error(`Failed to import workflow: ${message}`));
+        reject(new Error(wfError('failedToImport', { message })));
       }
     };
+
+    const onFocus = () => {
+      window.removeEventListener('focus', onFocus);
+      setTimeout(() => {
+        if (!settled) resolve();
+      }, 300);
+    };
+    window.addEventListener('focus', onFocus);
+
     input.click();
   });
 }
