@@ -1,0 +1,1 @@
+import{n as e,t}from"./lucide-CggoaiPc.js";document.addEventListener(`DOMContentLoaded`,()=>{t({icons:e})});
